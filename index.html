@@ -2,596 +2,1071 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GBELIK - Morča Adventures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GBELIK - Hladné Morča</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'VT323', monospace;
+            background: linear-gradient(180deg, #87CEEB 0%, #98D8AA 50%, #4A7C23 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
-        #gameContainer {
+        .game-container {
             position: relative;
-            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        /* INTRO SCREEN */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 20px;
+            height: 100%;
+            background: linear-gradient(180deg, #2D5016 0%, #4A7C23 50%, #6B8E23 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.5s ease;
         }
 
-        #introScreen, #gameOverScreen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            z-index: 1000;
-            width: 90%;
-            max-width: 500px;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        #introScreen h1 {
-            font-size: 3em;
-            color: #764ba2;
+        .intro-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(24px, 8vw, 48px);
+            color: #FFD93D;
+            text-shadow:
+                4px 4px 0 #8B4513,
+                -2px -2px 0 #654321;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        #introScreen .guinea-pig {
-            font-size: 5em;
-            margin: 20px 0;
-            animation: bounce 1s infinite;
+            animation: bounce 1s ease infinite;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-10px); }
         }
 
-        #introScreen p {
-            font-size: 1.2em;
-            color: #333;
-            margin: 15px 0;
-            line-height: 1.6;
+        .intro-guinea-pig {
+            font-size: clamp(60px, 15vw, 120px);
+            margin: 20px 0;
+            animation: wiggle 0.5s ease infinite;
         }
 
-        #introScreen button, #gameOverScreen button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .intro-subtitle {
+            font-family: 'VT323', monospace;
+            font-size: clamp(18px, 4vw, 28px);
+            color: #FFFACD;
+            text-align: center;
+            margin: 20px;
+            line-height: 1.5;
+        }
+
+        .start-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(14px, 3vw, 20px);
             padding: 15px 40px;
-            font-size: 1.3em;
-            border-radius: 50px;
+            background: linear-gradient(180deg, #FF6B35 0%, #D63031 100%);
+            color: white;
+            border: 4px solid #8B0000;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 0 #5C0000;
             margin-top: 20px;
-            transition: transform 0.2s;
         }
 
-        #introScreen button:hover, #gameOverScreen button:hover {
-            transform: scale(1.1);
+        .start-btn:hover {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 #5C0000;
         }
 
-        canvas {
-            background: #f0f0f0;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            display: block;
-            width: 100%;
-            max-width: 800px;
+        .start-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #5C0000;
         }
 
-        #stats {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .intro-instructions {
+            font-family: 'VT323', monospace;
+            font-size: clamp(14px, 3vw, 20px);
+            color: #90EE90;
+            margin-top: 30px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-        }
-
-        #stats div {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #764ba2;
-            margin: 5px;
-        }
-
-        #bossBar {
-            display: none;
-            background: white;
-            padding: 10px;
+            width: 100%;
+            max-width: 600px;
+            padding: 10px 15px;
+            background: linear-gradient(180deg, #5D4037 0%, #3E2723 100%);
             border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 3px solid #8D6E63;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
-        #bossBar .bar-container {
-            background: #ddd;
-            height: 30px;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        #bossBar .bar-fill {
-            background: linear-gradient(90deg, #ff6b6b, #ee5a6f);
-            height: 100%;
-            transition: width 0.3s;
+        .stat-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
+            gap: 8px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(10px, 2.5vw, 14px);
+            color: #FFD93D;
         }
 
-        #controls {
+        .stat-icon {
+            font-size: clamp(16px, 4vw, 24px);
+        }
+
+        /* GAME CANVAS */
+        #gameCanvas {
+            border: 6px solid #5D4037;
+            border-radius: 10px;
+            background: #7CB342;
+            box-shadow:
+                0 8px 16px rgba(0,0,0,0.3),
+                inset 0 0 50px rgba(0,0,0,0.1);
+            image-rendering: pixelated;
+        }
+
+        /* BOSS BAR */
+        .boss-bar-container {
             display: none;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            gap: 10px;
-            z-index: 100;
+            width: 100%;
+            max-width: 600px;
+            padding: 10px 15px;
+            background: linear-gradient(180deg, #B71C1C 0%, #7F0000 100%);
+            border-radius: 10px;
+            border: 3px solid #FF5252;
+            margin-top: 5px;
         }
 
-        #controls.mobile {
-            display: grid;
-            grid-template-columns: repeat(3, 70px);
-            grid-template-rows: repeat(2, 70px);
+        .boss-bar-container.active {
+            display: block;
+            animation: pulse 1s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px #FF0000; }
+            50% { box-shadow: 0 0 20px #FF0000, 0 0 30px #FF0000; }
+        }
+
+        .boss-name {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(10px, 2.5vw, 14px);
+            color: #FFCDD2;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .boss-bar {
+            width: 100%;
+            height: 20px;
+            background: #4A0000;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #FF8A80;
+        }
+
+        .boss-health {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FF5252 0%, #D32F2F 50%, #B71C1C 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* MOBILE CONTROLS */
+        .mobile-controls {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            width: min(250px, 60vw);
+            height: min(250px, 60vw);
+            margin-top: 15px;
+        }
+
+        @media (pointer: coarse) {
+            .mobile-controls {
+                display: grid;
+            }
         }
 
         .control-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: 3px solid #764ba2;
-            border-radius: 15px;
-            font-size: 2em;
+            background: linear-gradient(180deg, #FFB74D 0%, #FF9800 100%);
+            border: 3px solid #E65100;
+            border-radius: 10px;
+            font-size: clamp(24px, 8vw, 40px);
             cursor: pointer;
-            user-select: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            touch-action: manipulation;
+            box-shadow: 0 4px 0 #BF360C;
+            transition: all 0.1s;
+            user-select: none;
         }
 
         .control-btn:active {
-            background: #764ba2;
-            color: white;
-            transform: scale(0.95);
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #BF360C;
         }
 
-        #upBtn { grid-column: 2; grid-row: 1; }
-        #leftBtn { grid-column: 1; grid-row: 2; }
-        #downBtn { grid-column: 2; grid-row: 2; }
-        #rightBtn { grid-column: 3; grid-row: 2; }
+        .control-btn.up { grid-column: 2; grid-row: 1; }
+        .control-btn.left { grid-column: 1; grid-row: 2; }
+        .control-btn.right { grid-column: 3; grid-row: 2; }
+        .control-btn.down { grid-column: 2; grid-row: 3; }
 
-        @media (max-width: 600px) {
-            #gameContainer {
-                padding: 10px;
-            }
-            #introScreen, #gameOverScreen {
-                padding: 20px;
-            }
-            #introScreen h1 {
-                font-size: 2em;
-            }
-            #stats div {
-                font-size: 1em;
-            }
+        /* MESSAGES */
+        .message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .message-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message-box {
+            background: linear-gradient(180deg, #5D4037 0%, #3E2723 100%);
+            border: 4px solid #8D6E63;
+            border-radius: 15px;
+            padding: 30px 50px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .message-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(16px, 5vw, 28px);
+            color: #FFD93D;
+            margin-bottom: 20px;
+        }
+
+        .message-text {
+            font-family: 'VT323', monospace;
+            font-size: clamp(18px, 4vw, 26px);
+            color: #FFFACD;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .message-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(12px, 2.5vw, 16px);
+            padding: 12px 30px;
+            background: linear-gradient(180deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            border: 3px solid #1B5E20;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0D3D0D;
+            transition: all 0.2s;
+        }
+
+        .message-btn:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0D3D0D;
+        }
+
+        .message-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #0D3D0D;
+        }
+
+        /* LEVEL INDICATOR */
+        .level-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(20px, 6vw, 40px);
+            color: #FFD93D;
+            text-shadow: 3px 3px 0 #333;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 30;
+        }
+
+        .level-indicator.show {
+            animation: levelShow 2s ease forwards;
+        }
+
+        @keyframes levelShow {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        /* Decorative grass */
+        .grass-decoration {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: repeating-linear-gradient(
+                90deg,
+                #228B22 0px,
+                #228B22 10px,
+                #32CD32 10px,
+                #32CD32 20px
+            );
+            z-index: -1;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="introScreen">
-            <h1>🐹 GBELIK 🐹</h1>
-            <div class="guinea-pig">🐹</div>
-            <p><strong>Vitaj v dobrodružstve morčaťa GBELIK!</strong></p>
-            <p>🥕 Zober zeleninu a zväčšuj sa!</p>
-            <p>💣 Vyhni sa bombám!</p>
-            <p>🍅 Poraz rajčinového šéfa!</p>
-            <p><strong>Level 1:</strong> Zozbieraj 10 zelenín</p>
-            <p><strong>Level 2:</strong> Pozor na bomby!</p>
-            <p><strong>Level 3:</strong> Boss fight!</p>
-            <button onclick="startGame()">ZAČAŤ HRU</button>
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen">
+        <div class="intro-title">🥬 GBELIK 🥕</div>
+        <div class="intro-guinea-pig">🐹</div>
+        <div class="intro-subtitle">
+            Hladné morča hľadá zeleninu!<br>
+            Pomôž mu najesť sa!
         </div>
-
-        <div id="gameOverScreen" style="display: none;">
-            <h1 id="gameOverTitle">Koniec hry!</h1>
-            <div id="gameOverEmoji" style="font-size: 4em; margin: 20px 0;">😢</div>
-            <p id="gameOverMessage"></p>
-            <button onclick="location.reload()">HRAŤ ZNOVA</button>
+        <button class="start-btn" onclick="startGame()">ŠTART</button>
+        <div class="intro-instructions">
+            🎮 PC: Ovládaj šípkami<br>
+            📱 Mobil: Použi tlačidlá dole<br><br>
+            🥕 Zbieraj zeleninu<br>
+            💣 Vyhýbaj sa bombám<br>
+            🍅 Poraz zlú rajčinu!
         </div>
+    </div>
 
-        <div id="stats">
-            <div>🥕 Zelenina: <span id="score">0</span></div>
-            <div>📊 Level: <span id="level">1</span></div>
-            <div>⚡ Rýchlosť: <span id="speed">1</span></div>
+    <!-- MESSAGE OVERLAY -->
+    <div class="message-overlay" id="messageOverlay">
+        <div class="message-box">
+            <div class="message-title" id="messageTitle">Level dokončený!</div>
+            <div class="message-text" id="messageText">Výborne!</div>
+            <button class="message-btn" id="messageBtn" onclick="closeMessage()">Pokračovať</button>
         </div>
+    </div>
 
-        <div id="bossBar">
-            <div style="text-align: center; margin-bottom: 5px; font-weight: bold; color: #ff6b6b;">
-                🍅 ŠÉF RAJČINA 🍅
+    <!-- LEVEL INDICATOR -->
+    <div class="level-indicator" id="levelIndicator"></div>
+
+    <!-- GAME CONTAINER -->
+    <div class="game-container">
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-icon">🐹</span>
+                <span>GBELIK</span>
             </div>
-            <div class="bar-container">
-                <div class="bar-fill" id="bossHealth" style="width: 100%;">
-                    HP: 3/3
-                </div>
+            <div class="stat-item">
+                <span class="stat-icon">🥕</span>
+                <span id="vegCount">0</span>/10
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📊</span>
+                <span>Level <span id="levelNum">1</span></span>
             </div>
         </div>
 
         <canvas id="gameCanvas"></canvas>
 
-        <div id="controls">
-            <button class="control-btn" id="upBtn">↑</button>
-            <button class="control-btn" id="leftBtn">←</button>
-            <button class="control-btn" id="downBtn">↓</button>
-            <button class="control-btn" id="rightBtn">→</button>
+        <div class="boss-bar-container" id="bossBar">
+            <div class="boss-name">🍅 ZLÁ RAJČINA 🍅</div>
+            <div class="boss-bar">
+                <div class="boss-health" id="bossHealth"></div>
+            </div>
+        </div>
+
+        <div class="mobile-controls">
+            <button class="control-btn up" ontouchstart="handleTouch('up')" onclick="handleTouch('up')">⬆️</button>
+            <button class="control-btn left" ontouchstart="handleTouch('left')" onclick="handleTouch('left')">⬅️</button>
+            <button class="control-btn right" ontouchstart="handleTouch('right')" onclick="handleTouch('right')">➡️</button>
+            <button class="control-btn down" ontouchstart="handleTouch('down')" onclick="handleTouch('down')">⬇️</button>
         </div>
     </div>
 
+    <div class="grass-decoration"></div>
+
     <script>
+        // Canvas setup
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Set canvas size
-        const setCanvasSize = () => {
-            const maxWidth = 800;
-            const maxHeight = 600;
-            const containerWidth = document.getElementById('gameContainer').clientWidth - 40;
-
-            if (window.innerWidth <= 600) {
-                canvas.width = Math.min(containerWidth, 400);
-                canvas.height = Math.min(containerWidth, 400);
-            } else {
-                canvas.width = Math.min(containerWidth, maxWidth);
-                canvas.height = Math.min(containerWidth * 0.75, maxHeight);
-            }
-        };
-
+        // Responsive canvas size
+        function setCanvasSize() {
+            const maxWidth = Math.min(600, window.innerWidth - 40);
+            const maxHeight = Math.min(400, window.innerHeight - 300);
+            canvas.width = Math.floor(maxWidth / 20) * 20;
+            canvas.height = Math.floor(maxHeight / 20) * 20;
+        }
         setCanvasSize();
         window.addEventListener('resize', setCanvasSize);
 
-        // Detect mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        const GRID_SIZE = 20;
 
-        if (isMobile) {
-            document.getElementById('controls').classList.add('mobile');
-        }
-
-        // Game variables
+        // Game state
         let gameRunning = false;
-        let gridSize = 20;
-        let tileCount;
-        let guineaPig = [];
-        let direction = { x: 1, y: 0 };
-        let nextDirection = { x: 1, y: 0 };
-        let food = {};
-        let bombs = [];
+        let currentLevel = 1;
+        let vegCount = 0;
         let score = 0;
-        let level = 1;
-        let speed = 1;
+        let bossHP = 3;
         let gameSpeed = 150;
+
+        // Guinea pig (GBELIK)
+        let gbelik = {
+            body: [{x: 5, y: 5}],
+            direction: {x: 1, y: 0},
+            nextDirection: {x: 1, y: 0}
+        };
+
+        // Game objects
+        let vegetables = [];
+        let bombs = [];
         let boss = null;
-        let bossHealth = 3;
-        let bossShootTimer = 0;
+        let bossBombs = [];
 
-        // Guinea pig colors (brown-black-mustard)
-        const guineaPigColors = ['#8B4513', '#3d2817', '#DAA520'];
+        // Vegetable types
+        const VEGGIES = ['🥕', '🥬', '🥒', '🌽', '🥦', '🫑'];
 
-        // Vegetable emojis
-        const vegetables = ['🥕', '🥬', '🥦', '🌽', '🫑', '🥒'];
-
-        function startGame() {
-            document.getElementById('introScreen').style.display = 'none';
-            gameRunning = true;
-            initGame();
-            gameLoop();
-        }
-
+        // Initialize game
         function initGame() {
-            tileCount = Math.floor(canvas.width / gridSize);
-            guineaPig = [
-                { x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) }
-            ];
-            direction = { x: 1, y: 0 };
-            nextDirection = { x: 1, y: 0 };
-            score = 0;
-            level = 1;
-            speed = 1;
-            gameSpeed = 150;
+            gbelik = {
+                body: [{x: 5, y: 5}],
+                direction: {x: 1, y: 0},
+                nextDirection: {x: 1, y: 0}
+            };
+            vegetables = [];
             bombs = [];
+            bossBombs = [];
             boss = null;
-            bossHealth = 3;
-            document.getElementById('bossBar').style.display = 'none';
-            spawnFood();
-            updateStats();
-        }
+            bossHP = 3;
+            gameSpeed = 150;
 
-        function spawnFood() {
-            let validPosition = false;
-            while (!validPosition) {
-                food = {
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount),
-                    emoji: vegetables[Math.floor(Math.random() * vegetables.length)]
-                };
-                validPosition = !guineaPig.some(segment => segment.x === food.x && segment.y === food.y);
-                if (boss && food.x === boss.x && food.y === boss.y) {
-                    validPosition = false;
-                }
+            spawnVegetable();
+
+            if (currentLevel >= 2) {
+                spawnBombs(currentLevel === 2 ? 3 : 2);
             }
+
+            if (currentLevel === 3) {
+                spawnBoss();
+            }
+
+            updateUI();
         }
 
-        function spawnBomb() {
-            let validPosition = false;
+        // Spawn vegetable
+        function spawnVegetable() {
+            let pos;
             let attempts = 0;
-            while (!validPosition && attempts < 50) {
-                const bomb = {
-                    x: Math.floor(Math.random() * tileCount),
-                    y: Math.floor(Math.random() * tileCount)
+            do {
+                pos = {
+                    x: Math.floor(Math.random() * (canvas.width / GRID_SIZE)),
+                    y: Math.floor(Math.random() * (canvas.height / GRID_SIZE))
                 };
-                validPosition = !guineaPig.some(segment => segment.x === bomb.x && segment.y === bomb.y);
-                validPosition = validPosition && (bomb.x !== food.x || bomb.y !== food.y);
-                validPosition = validPosition && !bombs.some(b => b.x === bomb.x && b.y === bomb.y);
-                if (boss) {
-                    validPosition = validPosition && (bomb.x !== boss.x || bomb.y !== boss.y);
-                }
-                if (validPosition) {
-                    bombs.push(bomb);
-                }
                 attempts++;
+            } while (isOccupied(pos) && attempts < 100);
+
+            vegetables.push({
+                ...pos,
+                type: VEGGIES[Math.floor(Math.random() * VEGGIES.length)]
+            });
+        }
+
+        // Spawn bombs
+        function spawnBombs(count) {
+            bombs = [];
+            for (let i = 0; i < count; i++) {
+                let pos;
+                let attempts = 0;
+                do {
+                    pos = {
+                        x: Math.floor(Math.random() * (canvas.width / GRID_SIZE)),
+                        y: Math.floor(Math.random() * (canvas.height / GRID_SIZE))
+                    };
+                    attempts++;
+                } while (isOccupied(pos) && attempts < 100);
+                bombs.push(pos);
             }
         }
 
+        // Spawn boss
         function spawnBoss() {
             boss = {
-                x: Math.floor(tileCount / 2),
-                y: 3
+                x: Math.floor(canvas.width / GRID_SIZE) - 3,
+                y: Math.floor(canvas.height / GRID_SIZE / 2) - 1,
+                width: 3,
+                height: 3,
+                lastShot: 0,
+                shotInterval: 2000
             };
-            bossHealth = 3;
-            document.getElementById('bossBar').style.display = 'block';
-            updateBossBar();
+            document.getElementById('bossBar').classList.add('active');
+            updateBossHealth();
         }
 
-        function updateBossBar() {
-            const percentage = (bossHealth / 3) * 100;
-            document.getElementById('bossHealth').style.width = percentage + '%';
-            document.getElementById('bossHealth').textContent = `HP: ${bossHealth}/3`;
+        // Check if position is occupied
+        function isOccupied(pos) {
+            // Check gbelik body
+            for (let part of gbelik.body) {
+                if (part.x === pos.x && part.y === pos.y) return true;
+            }
+            // Check vegetables
+            for (let veg of vegetables) {
+                if (veg.x === pos.x && veg.y === pos.y) return true;
+            }
+            // Check bombs
+            for (let bomb of bombs) {
+                if (bomb.x === pos.x && bomb.y === pos.y) return true;
+            }
+            // Check boss
+            if (boss) {
+                if (pos.x >= boss.x && pos.x < boss.x + boss.width &&
+                    pos.y >= boss.y && pos.y < boss.y + boss.height) return true;
+            }
+            return false;
         }
 
-        function updateStats() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('level').textContent = level;
-            document.getElementById('speed').textContent = speed;
+        // Update UI
+        function updateUI() {
+            document.getElementById('vegCount').textContent = vegCount;
+            document.getElementById('levelNum').textContent = currentLevel;
         }
 
-        function gameLoop() {
-            if (!gameRunning) return;
+        // Update boss health bar
+        function updateBossHealth() {
+            const healthPercent = (bossHP / 3) * 100;
+            document.getElementById('bossHealth').style.width = healthPercent + '%';
+        }
 
-            direction = { ...nextDirection };
+        // Draw game
+        function draw() {
+            // Clear canvas with grass pattern
+            ctx.fillStyle = '#7CB342';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const head = { ...guineaPig[0] };
-            head.x += direction.x;
-            head.y += direction.y;
-
-            // Wall collision
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                gameOver('Narazil si do steny!');
-                return;
+            // Draw grass texture
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            for (let x = 0; x < canvas.width; x += GRID_SIZE * 2) {
+                for (let y = 0; y < canvas.height; y += GRID_SIZE * 2) {
+                    ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+                }
             }
 
+            // Draw vegetables
+            ctx.font = `${GRID_SIZE - 2}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let veg of vegetables) {
+                // Svetlé pozadie pod zeleninou
+                ctx.fillStyle = '#FFFDE7';
+                ctx.beginPath();
+                ctx.arc(veg.x * GRID_SIZE + GRID_SIZE/2, veg.y * GRID_SIZE + GRID_SIZE/2, GRID_SIZE/2 + 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#8D6E63';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillText(veg.type, veg.x * GRID_SIZE + GRID_SIZE/2, veg.y * GRID_SIZE + GRID_SIZE/2);
+            }
+
+            // Draw bombs
+            for (let bomb of bombs) {
+                // Tmavé pozadie pod bombou
+                ctx.fillStyle = '#37474F';
+                ctx.beginPath();
+                ctx.arc(bomb.x * GRID_SIZE + GRID_SIZE/2, bomb.y * GRID_SIZE + GRID_SIZE/2, GRID_SIZE/2 + 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#FF5252';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillText('💣', bomb.x * GRID_SIZE + GRID_SIZE/2, bomb.y * GRID_SIZE + GRID_SIZE/2);
+            }
+
+            // Draw boss bombs
+            for (let bomb of bossBombs) {
+                // Červené pozadie pod boss bombou
+                ctx.fillStyle = '#B71C1C';
+                ctx.beginPath();
+                ctx.arc(bomb.x * GRID_SIZE + GRID_SIZE/2, bomb.y * GRID_SIZE + GRID_SIZE/2, GRID_SIZE/2 + 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#FFCDD2';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillText('🔴', bomb.x * GRID_SIZE + GRID_SIZE/2, bomb.y * GRID_SIZE + GRID_SIZE/2);
+            }
+
+            // Draw boss (tomato)
+            if (boss) {
+                ctx.font = `${GRID_SIZE * 2.5}px Arial`;
+                ctx.fillText('🍅', boss.x * GRID_SIZE + GRID_SIZE * 1.5, boss.y * GRID_SIZE + GRID_SIZE * 1.5);
+
+                // Boss face
+                ctx.font = `${GRID_SIZE * 0.8}px Arial`;
+                ctx.fillText('😠', boss.x * GRID_SIZE + GRID_SIZE * 1.5, boss.y * GRID_SIZE + GRID_SIZE * 1.2);
+            }
+
+            // Draw GBELIK (guinea pig)
+            for (let i = 0; i < gbelik.body.length; i++) {
+                const part = gbelik.body[i];
+                const x = part.x * GRID_SIZE;
+                const y = part.y * GRID_SIZE;
+
+                if (i === 0) {
+                    // Head - draw guinea pig face
+                    // Body base (mustard/brown)
+                    ctx.fillStyle = '#C4A35A';
+                    ctx.beginPath();
+                    ctx.ellipse(x + GRID_SIZE/2, y + GRID_SIZE/2, GRID_SIZE/2 - 1, GRID_SIZE/2 - 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Dark patches
+                    ctx.fillStyle = '#3D3D3D';
+                    ctx.beginPath();
+                    ctx.ellipse(x + GRID_SIZE/3, y + GRID_SIZE/3, 4, 3, 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Brown patch
+                    ctx.fillStyle = '#8B4513';
+                    ctx.beginPath();
+                    ctx.ellipse(x + GRID_SIZE * 0.7, y + GRID_SIZE * 0.6, 4, 3, -0.3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Eyes
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(x + GRID_SIZE/3, y + GRID_SIZE/2.5, 2, 0, Math.PI * 2);
+                    ctx.arc(x + GRID_SIZE * 0.65, y + GRID_SIZE/2.5, 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Eye shine
+                    ctx.fillStyle = '#FFF';
+                    ctx.beginPath();
+                    ctx.arc(x + GRID_SIZE/3 + 0.5, y + GRID_SIZE/2.5 - 0.5, 0.8, 0, Math.PI * 2);
+                    ctx.arc(x + GRID_SIZE * 0.65 + 0.5, y + GRID_SIZE/2.5 - 0.5, 0.8, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Nose
+                    ctx.fillStyle = '#FFB6C1';
+                    ctx.beginPath();
+                    ctx.ellipse(x + GRID_SIZE/2, y + GRID_SIZE * 0.65, 2, 1.5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Ears
+                    ctx.fillStyle = '#C4A35A';
+                    ctx.beginPath();
+                    ctx.ellipse(x + 3, y + 3, 3, 4, -0.5, 0, Math.PI * 2);
+                    ctx.ellipse(x + GRID_SIZE - 3, y + 3, 3, 4, 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Inner ears
+                    ctx.fillStyle = '#FFB6C1';
+                    ctx.beginPath();
+                    ctx.ellipse(x + 3, y + 3, 1.5, 2, -0.5, 0, Math.PI * 2);
+                    ctx.ellipse(x + GRID_SIZE - 3, y + 3, 1.5, 2, 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else {
+                    // Body segments
+                    const gradient = ctx.createRadialGradient(
+                        x + GRID_SIZE/2, y + GRID_SIZE/2, 0,
+                        x + GRID_SIZE/2, y + GRID_SIZE/2, GRID_SIZE/2
+                    );
+
+                    // Alternate colors
+                    if (i % 3 === 0) {
+                        gradient.addColorStop(0, '#C4A35A'); // Mustard
+                        gradient.addColorStop(1, '#9E8344');
+                    } else if (i % 3 === 1) {
+                        gradient.addColorStop(0, '#5D4037'); // Brown
+                        gradient.addColorStop(1, '#4A3228');
+                    } else {
+                        gradient.addColorStop(0, '#3D3D3D'); // Black
+                        gradient.addColorStop(1, '#2D2D2D');
+                    }
+
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.ellipse(x + GRID_SIZE/2, y + GRID_SIZE/2, GRID_SIZE/2 - 1, GRID_SIZE/2 - 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // Move GBELIK
+        function moveGbelik() {
+            gbelik.direction = {...gbelik.nextDirection};
+
+            const head = gbelik.body[0];
+            const newHead = {
+                x: head.x + gbelik.direction.x,
+                y: head.y + gbelik.direction.y
+            };
+
+            // Wall collision - wrap around
+            const maxX = Math.floor(canvas.width / GRID_SIZE);
+            const maxY = Math.floor(canvas.height / GRID_SIZE);
+
+            if (newHead.x < 0) newHead.x = maxX - 1;
+            if (newHead.x >= maxX) newHead.x = 0;
+            if (newHead.y < 0) newHead.y = maxY - 1;
+            if (newHead.y >= maxY) newHead.y = 0;
+
             // Self collision
-            if (guineaPig.some(segment => segment.x === head.x && segment.y === head.y)) {
-                gameOver('Uhryzoł si sa!');
-                return;
+            for (let i = 1; i < gbelik.body.length; i++) {
+                if (gbelik.body[i].x === newHead.x && gbelik.body[i].y === newHead.y) {
+                    gameOver();
+                    return;
+                }
             }
 
             // Bomb collision
-            if (bombs.some(bomb => bomb.x === head.x && bomb.y === head.y)) {
-                gameOver('Trafila ťa bomba! Hra sa začína od začiatku!');
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
-                return;
+            for (let bomb of bombs) {
+                if (bomb.x === newHead.x && bomb.y === newHead.y) {
+                    hitBomb();
+                    return;
+                }
             }
 
-            guineaPig.unshift(head);
+            // Boss bomb collision
+            for (let i = bossBombs.length - 1; i >= 0; i--) {
+                if (bossBombs[i].x === newHead.x && bossBombs[i].y === newHead.y) {
+                    hitBomb();
+                    return;
+                }
+            }
 
-            // Food collision
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                speed++;
-                gameSpeed = Math.max(50, 150 - (speed * 5));
-                updateStats();
-                spawnFood();
+            // Boss collision (bite the boss!)
+            if (boss) {
+                if (newHead.x >= boss.x && newHead.x < boss.x + boss.width &&
+                    newHead.y >= boss.y && newHead.y < boss.y + boss.height) {
+                    hitBoss();
+                    return;
+                }
+            }
 
-                // Level progression
-                if (level === 1 && score >= 10) {
-                    level = 2;
-                    updateStats();
-                    // Add bombs in level 2
-                    for (let i = 0; i < 3; i++) {
-                        spawnBomb();
+            gbelik.body.unshift(newHead);
+
+            // Vegetable collision
+            let ate = false;
+            for (let i = vegetables.length - 1; i >= 0; i--) {
+                if (vegetables[i].x === newHead.x && vegetables[i].y === newHead.y) {
+                    vegetables.splice(i, 1);
+                    vegCount++;
+                    ate = true;
+
+                    // Increase speed
+                    gameSpeed = Math.max(80, gameSpeed - 5);
+
+                    // Check level completion
+                    if (vegCount >= 10 && currentLevel < 3) {
+                        levelComplete();
+                        return;
+                    } else if (vegCount >= 10 && currentLevel === 3 && bossHP <= 0) {
+                        gameWin();
+                        return;
                     }
-                } else if (level === 2 && score >= 20) {
-                    level = 3;
-                    updateStats();
-                    spawnBoss();
-                    bombs = []; // Clear bombs for boss fight
+
+                    // Spawn new vegetable
+                    spawnVegetable();
+                    break;
+                }
+            }
+
+            if (!ate) {
+                gbelik.body.pop();
+            }
+
+            updateUI();
+        }
+
+        // Boss shooting
+        function updateBoss() {
+            if (!boss || !gameRunning) return;
+
+            const now = Date.now();
+            if (now - boss.lastShot > boss.shotInterval) {
+                boss.lastShot = now;
+
+                // Shoot bomb towards player
+                const headX = gbelik.body[0].x;
+                const headY = gbelik.body[0].y;
+
+                bossBombs.push({
+                    x: boss.x,
+                    y: boss.y + 1,
+                    targetX: headX,
+                    targetY: headY,
+                    dx: Math.sign(headX - boss.x) || -1,
+                    dy: Math.sign(headY - (boss.y + 1))
+                });
+            }
+        }
+
+        // Move boss bombs
+        function moveBossBombs() {
+            for (let i = bossBombs.length - 1; i >= 0; i--) {
+                const bomb = bossBombs[i];
+                bomb.x += bomb.dx;
+
+                // Random vertical movement
+                if (Math.random() < 0.3) {
+                    bomb.y += bomb.dy;
+                }
+
+                // Remove if out of bounds
+                if (bomb.x < 0 || bomb.x >= canvas.width / GRID_SIZE ||
+                    bomb.y < 0 || bomb.y >= canvas.height / GRID_SIZE) {
+                    bossBombs.splice(i, 1);
+                }
+            }
+        }
+
+        // Hit boss
+        function hitBoss() {
+            bossHP--;
+            updateBossHealth();
+
+            if (bossHP <= 0) {
+                boss = null;
+                document.getElementById('bossBar').classList.remove('active');
+
+                if (vegCount >= 10) {
+                    gameWin();
+                } else {
+                    showMessage('Boss porazený!', 'Teraz dozbieraj zeleninu!', 'Pokračovať');
                 }
             } else {
-                guineaPig.pop();
-            }
-
-            // Boss collision (attacking)
-            if (boss && head.x === boss.x && head.y === boss.y) {
-                bossHealth--;
-                updateBossBar();
-
-                if (bossHealth <= 0) {
-                    winGame();
-                    return;
-                } else {
-                    // Move boss to new position
-                    let validPosition = false;
-                    while (!validPosition) {
-                        boss.x = Math.floor(Math.random() * tileCount);
-                        boss.y = Math.floor(Math.random() * (tileCount / 2));
-                        validPosition = !guineaPig.some(segment => segment.x === boss.x && segment.y === boss.y);
-                        validPosition = validPosition && (boss.x !== food.x || boss.y !== food.y);
-                    }
-                }
-            }
-
-            // Boss shoots bombs
-            if (boss) {
-                bossShootTimer++;
-                if (bossShootTimer >= 8) {
-                    bossShootTimer = 0;
-                    spawnBomb();
-                }
-            }
-
-            // Level 2: spawn bombs periodically
-            if (level === 2 && Math.random() < 0.05) {
-                spawnBomb();
-            }
-
-            draw();
-            setTimeout(gameLoop, gameSpeed);
-        }
-
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#e8f5e8';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw grid
-            ctx.strokeStyle = '#d0d0d0';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= tileCount; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * gridSize, 0);
-                ctx.lineTo(i * gridSize, canvas.height);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(0, i * gridSize);
-                ctx.lineTo(canvas.width, i * gridSize);
-                ctx.stroke();
-            }
-
-            // Draw guinea pig GBELIK
-            guineaPig.forEach((segment, index) => {
-                const colorIndex = index % guineaPigColors.length;
-                ctx.fillStyle = guineaPigColors[colorIndex];
-                ctx.fillRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4);
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4);
-
-                // Draw eyes on head
-                if (index === 0) {
-                    ctx.fillStyle = 'black';
-                    ctx.beginPath();
-                    ctx.arc(segment.x * gridSize + 8, segment.y * gridSize + 8, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(segment.x * gridSize + 14, segment.y * gridSize + 8, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-
-            // Draw food
-            ctx.font = `${gridSize - 4}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(food.emoji, food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2);
-
-            // Draw bombs
-            bombs.forEach(bomb => {
-                ctx.fillText('💣', bomb.x * gridSize + gridSize / 2, bomb.y * gridSize + gridSize / 2);
-            });
-
-            // Draw boss
-            if (boss) {
-                ctx.font = `${gridSize * 2}px Arial`;
-                ctx.fillText('🍅', boss.x * gridSize + gridSize / 2, boss.y * gridSize + gridSize / 2);
+                // Push back gbelik
+                const head = gbelik.body[0];
+                gbelik.body[0] = {
+                    x: Math.max(0, head.x - 3),
+                    y: head.y
+                };
             }
         }
 
-        function gameOver(message) {
+        // Hit bomb - restart game from beginning
+        function hitBomb() {
             gameRunning = false;
-            document.getElementById('gameOverTitle').textContent = 'Koniec hry!';
-            document.getElementById('gameOverEmoji').textContent = '😢';
-            document.getElementById('gameOverMessage').textContent = message + ` Zozberal si ${score} zelenín!`;
-            document.getElementById('gameOverScreen').style.display = 'block';
+            showMessage('💥 BUM!', 'Bomba ťa trafila!\nVraciaš sa na začiatok!', 'Skúsiť znova');
+            currentLevel = 1;
+            vegCount = 0;
+            gameSpeed = 150;
         }
 
-        function winGame() {
+        // Level complete
+        function levelComplete() {
             gameRunning = false;
-            document.getElementById('gameOverTitle').textContent = 'VÝHRA!';
-            document.getElementById('gameOverEmoji').textContent = '🎉';
-            document.getElementById('gameOverMessage').textContent = `Gratulujeme! Porazil si šéfa rajčinu! Zozberal si ${score} zelenín!`;
-            document.getElementById('gameOverScreen').style.display = 'block';
+            currentLevel++;
+            vegCount = 0;
+
+            let levelText = '';
+            if (currentLevel === 2) {
+                levelText = 'Teraz pribudnú BOMBY!\nDávaj si pozor!';
+            } else if (currentLevel === 3) {
+                levelText = 'BOSS FIGHT!\nPoraz zlú rajčinu!';
+            }
+
+            showMessage(`Level ${currentLevel - 1} dokončený!`, levelText, 'Ďalší level');
         }
 
-        // Keyboard controls
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            showMessage('💀 Koniec hry!', 'GBELIK sa zamotal!', 'Skúsiť znova');
+            currentLevel = 1;
+            vegCount = 0;
+            gameSpeed = 150;
+        }
+
+        // Game win
+        function gameWin() {
+            gameRunning = false;
+            showMessage('🏆 VÍŤAZSTVO!', 'GBELIK porazil zlú rajčinu\na najedol sa do sýtosti!', 'Hrať znova');
+            currentLevel = 1;
+            vegCount = 0;
+            gameSpeed = 150;
+        }
+
+        // Show message
+        function showMessage(title, text, btnText) {
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageText').textContent = text;
+            document.getElementById('messageBtn').textContent = btnText;
+            document.getElementById('messageOverlay').classList.add('active');
+        }
+
+        // Close message and continue
+        function closeMessage() {
+            document.getElementById('messageOverlay').classList.remove('active');
+
+            // Show level indicator
+            const indicator = document.getElementById('levelIndicator');
+            indicator.textContent = `Level ${currentLevel}`;
+            indicator.classList.add('show');
+
+            setTimeout(() => {
+                indicator.classList.remove('show');
+                initGame();
+                gameRunning = true;
+            }, 2000);
+        }
+
+        // Start game
+        function startGame() {
+            document.getElementById('intro-screen').style.display = 'none';
+
+            const indicator = document.getElementById('levelIndicator');
+            indicator.textContent = 'Level 1';
+            indicator.classList.add('show');
+
+            setTimeout(() => {
+                indicator.classList.remove('show');
+                initGame();
+                gameRunning = true;
+            }, 2000);
+        }
+
+        // Handle keyboard
         document.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+
             switch(e.key) {
                 case 'ArrowUp':
-                    if (direction.y === 0) nextDirection = { x: 0, y: -1 };
+                    if (gbelik.direction.y !== 1) {
+                        gbelik.nextDirection = {x: 0, y: -1};
+                    }
                     e.preventDefault();
                     break;
                 case 'ArrowDown':
-                    if (direction.y === 0) nextDirection = { x: 0, y: 1 };
+                    if (gbelik.direction.y !== -1) {
+                        gbelik.nextDirection = {x: 0, y: 1};
+                    }
                     e.preventDefault();
                     break;
                 case 'ArrowLeft':
-                    if (direction.x === 0) nextDirection = { x: -1, y: 0 };
+                    if (gbelik.direction.x !== 1) {
+                        gbelik.nextDirection = {x: -1, y: 0};
+                    }
                     e.preventDefault();
                     break;
                 case 'ArrowRight':
-                    if (direction.x === 0) nextDirection = { x: 1, y: 0 };
+                    if (gbelik.direction.x !== -1) {
+                        gbelik.nextDirection = {x: 1, y: 0};
+                    }
                     e.preventDefault();
                     break;
             }
         });
 
-        // Touch controls
-        document.getElementById('upBtn').addEventListener('click', () => {
-            if (direction.y === 0) nextDirection = { x: 0, y: -1 };
-        });
-        document.getElementById('downBtn').addEventListener('click', () => {
-            if (direction.y === 0) nextDirection = { x: 0, y: 1 };
-        });
-        document.getElementById('leftBtn').addEventListener('click', () => {
-            if (direction.x === 0) nextDirection = { x: -1, y: 0 };
-        });
-        document.getElementById('rightBtn').addEventListener('click', () => {
-            if (direction.x === 0) nextDirection = { x: 1, y: 0 };
-        });
+        // Handle touch controls
+        function handleTouch(direction) {
+            if (!gameRunning) return;
 
-        // Prevent default touch behavior
-        document.getElementById('controls').addEventListener('touchstart', (e) => {
+            switch(direction) {
+                case 'up':
+                    if (gbelik.direction.y !== 1) {
+                        gbelik.nextDirection = {x: 0, y: -1};
+                    }
+                    break;
+                case 'down':
+                    if (gbelik.direction.y !== -1) {
+                        gbelik.nextDirection = {x: 0, y: 1};
+                    }
+                    break;
+                case 'left':
+                    if (gbelik.direction.x !== 1) {
+                        gbelik.nextDirection = {x: -1, y: 0};
+                    }
+                    break;
+                case 'right':
+                    if (gbelik.direction.x !== -1) {
+                        gbelik.nextDirection = {x: 1, y: 0};
+                    }
+                    break;
+            }
+        }
+
+        // Prevent scrolling on mobile
+        document.addEventListener('touchmove', (e) => {
             e.preventDefault();
         }, { passive: false });
+
+        // Game loop
+        let lastTime = 0;
+        let bossLastTime = 0;
+
+        function gameLoop(currentTime) {
+            requestAnimationFrame(gameLoop);
+
+            if (!gameRunning) {
+                draw();
+                return;
+            }
+
+            // Main game tick
+            if (currentTime - lastTime >= gameSpeed) {
+                lastTime = currentTime;
+                moveGbelik();
+            }
+
+            // Boss updates (every 500ms)
+            if (currentLevel === 3 && boss) {
+                updateBoss();
+                if (currentTime - bossLastTime >= 300) {
+                    bossLastTime = currentTime;
+                    moveBossBombs();
+                }
+            }
+
+            draw();
+        }
+
+        // Start game loop
+        requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
